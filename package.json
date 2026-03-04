@@ -1,0 +1,23 @@
+{
+  "name": "tle-3-backend",
+  "version": "1.0.0",
+  "description": "Onze Backend voor ons TLE project",
+  "homepage": "https://github.com/Frutiger-AER0/TLE-3-backend#readme",
+  "bugs": {
+    "url": "https://github.com/Frutiger-AER0/TLE-3-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Frutiger-AER0/TLE-3-backend.git"
+  },
+  "license": "ISC",
+  "author": "TLE-2 Team 2 Backend",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
