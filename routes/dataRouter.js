@@ -3,23 +3,23 @@ import db from "../database.js";
 
 const dataRouter = express.Router()
 
-dataRouter.use((req,res, next)=>{
-
+dataRouter.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Origin", "*");
 
-    console.log("Check accept header");
-    if(req.headers.accept === "application/json"){
-        next();
-    }else {
-        if (req.method === "OPTIONS"){
-            next();
-        }else {
-            res.status(406).json({message: "Webservice only supports json. Did you forget the Accept header?"})
-        }
+    if(req.method === "OPTIONS"){
+        return next();
     }
-})
 
-dataRouter.options("/",(req,res)=>{
+    if(req.headers.accept && req.headers.accept.includes("application/json")){
+        next();
+    }else{
+        res.status(406).json({
+            message:"Webservice only supports JSON. Did you forget the Accept header?"
+        })
+    }
+});
+
+dataRouter.options("*",(req,res)=>{
     res.header("Allow","GET, OPTIONS");
     res.header("Access-Control-Allow-Methods","GET, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
