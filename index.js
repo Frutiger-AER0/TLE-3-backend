@@ -1,6 +1,8 @@
 import express from 'express';
 import db from './database.js';
 
+import minigameSessionsRouter from './routes/minigameSessions.js';
+
 const app = express();
 
 app.get('/', (req, res) => {
@@ -9,5 +11,7 @@ app.get('/', (req, res) => {
         res.json(results);
     });
 });
+
+app.use("/minigame-sessions", minigameSessionsRouter);
 
 app.listen(3000, () => console.log('Server running on port 3000'));
