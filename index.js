@@ -1,5 +1,6 @@
 import express from 'express';
 import dataRouter from "./routes/dataRouter.js";
+import youtubeRouter from "./routes/youtubeRouter.js";
 
 const app = express();
 
