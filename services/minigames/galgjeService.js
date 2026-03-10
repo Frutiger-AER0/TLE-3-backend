@@ -77,6 +77,47 @@ export function guessLetter(sessionId, letter) {
     };
 }
 
+export function guessWord(sessionId, guessedWord) {
+    const game = activeGames.get(Number(sessionId));
+
+    if (!game) {
+        return null;
+    }
+
+    if (game.status !== "active") {
+        return {
+            result: "finished",
+            state: buildState(Number(sessionId), game)
+        };
+    }
+
+    const normalizedWord = guessedWord.trim().toLowerCase();
+    const actualWord = game.word.toLowerCase();
+
+    if (normalizedWord === actualWord) {
+        game.guessedLetters = [...new Set(game.word.toLowerCase().split(""))];
+        game.status = "won";
+
+        return {
+            result: "correct_word",
+            state: buildState(Number(sessionId), game)
+        };
+    }
+
+    if (!game.wrongLetters.includes(normalizedWord)) {
+        game.wrongLetters.push(normalizedWord);
+    }
+
+    if (game.wrongLetters.length >= game.maxWrong) {
+        game.status = "lost";
+    }
+
+    return {
+        result: "wrong_word",
+        state: buildState(Number(sessionId), game)
+    };
+}
+
 export function getInternalGame(sessionId) {
     return activeGames.get(Number(sessionId));
 }
