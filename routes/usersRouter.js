@@ -33,7 +33,7 @@ router.options("/:id", (req, res) => {
 // GET detail
 router.get("/:id", show);
 // PATCH /users/:id (partial update)
-router.put("/:id", update);
+router.patch("/:id", update);
 
 // DELETE /users/:id
 router.delete("/:id", (req, res) => {

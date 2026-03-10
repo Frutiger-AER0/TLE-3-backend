@@ -1,5 +1,4 @@
 import express from "express";
-import create from "../controllers/family/familyCreate.js";
 import db from "../database.js";
 
 import create from "../controllers/family/familyCreate.js";
@@ -27,8 +26,8 @@ router.options("/:id", (req, res) => {
 // GET detail
 router.get("/:id", show);
 
-// PATCH /users/:id (partial update)
-router.put("/:id", update);
+// PATCH /families/:id (partial update)
+router.patch("/:id", update);
 
 //Delete family
 router.delete("/:id", (req, res) => {
