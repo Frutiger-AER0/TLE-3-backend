@@ -4,10 +4,17 @@ import { guessLetter, getInternalGame } from "../../services/minigames/galgjeSer
 export default function guess(req, res) {
     const { id } = req.params;
     const { letter } = req.body;
+    const { word } = req.query;
 
     if (!letter || typeof letter !== "string" || letter.length !== 1) {
         return res.status(400).json({
             error: "letter must be a single character"
+        });
+    }
+
+    if (!word || typeof word !== "string") {
+        return res.status(400).json({
+            error: "word can't contain simbols or numbers"
         });
     }
 
