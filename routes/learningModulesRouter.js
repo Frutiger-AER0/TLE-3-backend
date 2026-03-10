@@ -51,7 +51,7 @@ learningModulesRouter.options("/:id",(req,res)=>{
 //GET detail
 learningModulesRouter.get("/:id", show )
 //CREATE quiz
-learningModulesRouter.post("/create", create)
+learningModulesRouter.post("/", create)
 //EDIT quiz
 learningModulesRouter.put("/:id", edit)
 //DELETE quiz
