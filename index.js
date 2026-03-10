@@ -1,13 +1,24 @@
 import express from 'express';
-import db from './database.js';
+import dataRouter from "./routes/dataRouter.js";
 
 const app = express();
 
-app.get('/', (req, res) => {
-    db.query('SELECT * FROM users', (err, results) => {
-        if (err) throw err;
-        res.json(results);
-    });
-});
+try {
+
+    app.use(express.json());
+
+    app.use(express.urlencoded({ extended: true }));
+
+    app.use("/", dataRouter)
+
+} catch (e) {
+    app.use((req,res)=>{
+        res.status(500).json({
+            message:"Database is down"
+        })
+    })
+
+}
 
 app.listen(3000, () => console.log('Server running on port 3000'));
+
