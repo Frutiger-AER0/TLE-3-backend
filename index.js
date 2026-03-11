@@ -12,6 +12,8 @@ try {
 
     app.use("/", dataRouter)
 
+    app.use("/", youtubeRouter);
+
 } catch (e) {
     app.use((req,res)=>{
         res.status(500).json({
