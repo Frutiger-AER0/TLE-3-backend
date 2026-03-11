@@ -16,7 +16,7 @@ export default function update(req, res) {
         }
 
         if (results.length === 0) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "user not found" });
         }
 
         const user = results[0];
@@ -34,7 +34,7 @@ export default function update(req, res) {
                 if (err) {
                     return res.status(500).json({ error: err.message });
                 }
-                res.json({ message: "User updated" });
+                res.json({ message: "user updated" });
             }
         );
     });
