@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAuthUrl, getTokens, setCredentials } from '../API/youtubeAuth.js';
+import { getAuthUrl, getTokens, setCredentials } from '../api/youtubeAuth.js';
 import db from '../database.js';
 
 const youtubeRouter = express.Router();
