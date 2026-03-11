@@ -4,6 +4,7 @@ import dataRouter from "./routes/dataRouter.js";
 // import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
+import minigameSessions from './routes/minigameSessions.js';
 
 try{
 
@@ -41,6 +42,8 @@ try{
     // app.use("/auth", authRouter);
     app.use("/users", usersRouter);
     app.use("/families", familiesRouter);
+    app.use("/minigame-sessions", minigameSessions);
+
     app.listen(3000, () => console.log('Server running on port 3000'));
 }
 catch (e){
