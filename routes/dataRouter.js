@@ -161,4 +161,13 @@ dataRouter.get('/minigame_events', (req, res) => {
     });
 });
 
+dataRouter.get('/match_users', (req, res) => {
+    db.query('SELECT * FROM match_users', (err, results) => {
+        if (results.length === 0){
+            res.status(404).json({message: "Collection not found."})
+        }else
+            res.status(200).json(results);
+    });
+});
+
 export default dataRouter

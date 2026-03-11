@@ -1,7 +1,5 @@
 import express from 'express';
 import dataRouter from "./routes/dataRouter.js";
-
-// import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 
@@ -11,13 +9,6 @@ try{
     app.use((req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*");
         next();
-    });
-
-    app.get('/', (req, res) => {
-        db.query('SELECT * FROM users', (err, results) => {
-            if (err) throw err;
-            res.json(results);
-        });
     });
 
     app.use((req, res, next) => {
@@ -37,11 +28,10 @@ try{
     app.use(express.urlencoded({ extended: true }));
 
     app.use("/", dataRouter)
-
-    // app.use("/auth", authRouter);
     app.use("/users", usersRouter);
     app.use("/families", familiesRouter);
-    app.listen(8000, () => console.log('Server running on port 3000'));
+    
+    app.listen(8000, () => console.log('Server running on port 8000'));
 }
 catch (e){
     console.log(e);
