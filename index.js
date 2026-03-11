@@ -2,6 +2,7 @@ import express from 'express';
 import dataRouter from "./routes/dataRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
+import minigameSessions from './routes/minigameSessions.js';
 
 try{
 
@@ -30,7 +31,8 @@ try{
     app.use("/", dataRouter)
     app.use("/users", usersRouter);
     app.use("/families", familiesRouter);
-    
+    app.use("/minigame-sessions", minigameSessions);
+
     app.listen(8000, () => console.log('Server running on port 8000'));
 }
 catch (e){
