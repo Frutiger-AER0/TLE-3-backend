@@ -100,20 +100,48 @@ dataRouter.get('/quizzes', (req, res) => {
 });
 
 dataRouter.get('/questions', (req, res) => {
-    db.query('SELECT * FROM questions', (err, results) => {
-        if (results.length === 0){
-            res.status(404).json({message: "Collection not found."})
-        }else
+    const quizId = req.query.quiz_id;
+
+    let query = 'SELECT * FROM questions';
+    const params = [];
+
+    if (quizId) {
+        query += ' WHERE quiz_id = ?';
+        params.push(quizId);
+    }
+
+    db.query(query, params, (err, results) => {
+        if (err) {
+            return res.status(500).json({message: "Database error", error: err.message});
+        }
+        if (results.length === 0) {
+            res.status(404).json({message: "Collection not found."});
+        } else {
             res.status(200).json(results);
+        }
     });
 });
 
 dataRouter.get('/answers', (req, res) => {
-    db.query('SELECT * FROM answers', (err, results) => {
-        if (results.length === 0){
-            res.status(404).json({message: "Collection not found."})
-        }else
+    const questionId = req.query.question_id;
+
+    let query = 'SELECT * FROM answers';
+    const params = [];
+
+    if (questionId) {
+        query += ' WHERE question_id = ?';
+        params.push(questionId);
+    }
+
+    db.query(query, params, (err, results) => {
+        if (err) {
+            return res.status(500).json({message: "Database error", error: err.message});
+        }
+        if (results.length === 0) {
+            res.status(404).json({message: "Collection not found."});
+        } else {
             res.status(200).json(results);
+        }
     });
 });
 
