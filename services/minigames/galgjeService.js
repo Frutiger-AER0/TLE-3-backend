@@ -17,7 +17,7 @@ function buildState(sessionId, game) {
 
 export function createGalgje(sessionId, minigameId, userId) {
     const randomWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-    const game = {word: randomWord, guessedLetters: [], wrongLetters: [], maxWrong: 6, status: "active", minigameId, userId};
+    const game = {word: randomWord, guessedLetters: [], wrongLetters: [], maxWrong: 10, status: "active", minigameId, userId};
 
     activeGames.set(sessionId, game);
     return buildState(sessionId, game);
