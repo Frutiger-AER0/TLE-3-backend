@@ -1,8 +1,13 @@
 import express from 'express';
 import dataRouter from "./routes/dataRouter.js";
+import authRouter from "./routes/authRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 try{
 
@@ -29,6 +34,8 @@ try{
     app.use(express.urlencoded({ extended: true }));
 
     app.use("/", dataRouter)
+
+    app.use("/login", authRouter);
     app.use("/users", usersRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
