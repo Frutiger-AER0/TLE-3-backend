@@ -5,6 +5,8 @@ import create from "../controllers/user/userCreate.js";
 import show from "../controllers/user/userDetail.js";
 import update from "../controllers/user/userUpdate.js";
 
+import requireAuth from "../middleware/auth.js";
+
 const router = express.Router();
 
 
@@ -31,7 +33,7 @@ router.options("/:id", (req, res) => {
 });
 
 // GET detail
-router.get("/:id", show);
+router.get("/:id", requireAuth, show);
 // PATCH /users/:id (partial update)
 router.patch("/:id", update);
 
