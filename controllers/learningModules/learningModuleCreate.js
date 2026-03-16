@@ -42,13 +42,13 @@ export default async function create(req, res) {
 
                     const answerValues = q.answers.map(a => [
                         questionId,
-                        a.answer_text,
+                        a.user_id,
                         a.is_correct,
                         new Date()
                     ]);
 
                     await connection.query(
-                        `INSERT INTO answers (question_id, answer_text, is_correct, created_at)
+                        `INSERT INTO answers (question_id, user_id, is_correct, created_at)
                          VALUES ?`,
                         [answerValues]
                     );

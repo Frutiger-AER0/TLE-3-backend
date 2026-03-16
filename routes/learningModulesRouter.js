@@ -1,9 +1,9 @@
 import express from "express";
 import db from "../database.js";
-import show from "../Controllers/learningModules/learningModuleDetail.js";
-import create from "../Controllers/learningModules/learningModuleCreate.js";
-import edit from "../Controllers/learningModules/learningModuleUpdate.js";
-import remove from "../Controllers/learningModules/learningModuleDelete.js";
+import show from "../controllers/learningModules/learningModuleDetail.js";
+import create from "../controllers/learningModules/learningModuleCreate.js";
+import edit from "../controllers/learningModules/learningModuleUpdate.js";
+import remove from "../controllers/learningModules/learningModuleDelete.js";
 
 
 const learningModulesRouter = express.Router()
