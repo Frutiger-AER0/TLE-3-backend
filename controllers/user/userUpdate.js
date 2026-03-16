@@ -9,7 +9,7 @@ function keepOldIfEmpty(newValue, oldValue) {
 
 export default function update(req, res) {
     const userId = req.params.id;
-    const { username, email, password, role, language, language_level } = req.body;
+    const { username, email, password, role, } = req.body;
 
     db.query("SELECT * FROM users WHERE id = ?", [userId], (err, results) => {
         if (err) {
@@ -25,12 +25,10 @@ export default function update(req, res) {
         const updatedEmail = keepOldIfEmpty(email, user.email);
         const updatedPassword = keepOldIfEmpty(password, user.password);
         const updatedRole = keepOldIfEmpty(role, user.role);
-        const updatedLanguage = keepOldIfEmpty(language, user.language);
-        const updatedLanguageLevel = keepOldIfEmpty(language_level, user.language_level);
 
         db.query(
-            `UPDATE users SET username = ?, email = ?, password = ?, role = ?, language = ?, language_level = ? WHERE id = ?`,
-            [updatedUsername, updatedEmail, updatedPassword, updatedRole, updatedLanguage, updatedLanguageLevel, userId],
+            `UPDATE users SET username = ?, email = ?, password = ?, role = ?, WHERE id = ?`,
+            [updatedUsername, updatedEmail, updatedPassword, updatedRole, userId],
             (err) => {
                 if (err) {
                     return res.status(500).json({ error: err.message });

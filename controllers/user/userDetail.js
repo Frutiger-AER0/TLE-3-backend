@@ -4,7 +4,7 @@ import db from "../../database.js";
 export default function show(req, res) {
     const { id } = req.params;
 
-    db.query(`SELECT id, username, email, role, language, language_level, created_at FROM users WHERE id = ?`,
+    db.query(`SELECT id, username, email, role, created_at FROM users WHERE id = ?`,
         [id],
         (err, results) => {
             if (err) {

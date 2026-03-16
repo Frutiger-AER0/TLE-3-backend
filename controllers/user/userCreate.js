@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import db from "../../database.js";
 
 export default async function create(req, res) {
-    const {username, email, password, role = 0, language = "english", language_level = "A1",} = req.body;
+    const {username, email, password, role = 0,} = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).json({
@@ -25,8 +25,8 @@ export default async function create(req, res) {
                     });
                 }
 
-                db.query(`INSERT INTO users(username,email,password,role,language,language_level,family_id,created_at) VALUES (?,?,?,?,?,?,NULL,NOW())`,
-                    [username, email, hashedPassword, role, language, language_level],
+                db.query(`INSERT INTO users(username,email,password,role,family_id,created_at) VALUES (?,?,?,?,NULL,NOW())`,
+                    [username, email, hashedPassword, role],
                     (err, result) => {
                         if (err) {
                             return res.status(500).json({ error: err.message });
