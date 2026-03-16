@@ -1,5 +1,6 @@
 import db from "../../database.js";
 
+
 function keepOldIfEmpty(newValue, oldValue) {
     if (newValue === undefined || newValue === null) return oldValue;
     if (typeof newValue === "string" && newValue.trim() === "") return oldValue;
