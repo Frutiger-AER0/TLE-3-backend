@@ -29,7 +29,7 @@ export default async function show(req, res) {
             themes.color,
 
             questions.id AS question_id,
-            questions.description AS question_text,
+            questions.description AS description,
 
             answers.id AS answer_id,
             answers.is_correct,
@@ -92,7 +92,7 @@ export default async function show(req, res) {
             if (!questionMap[row.question_id]) {
                 questionMap[row.question_id] = {
                     id: row.question_id,
-                    question_text: row.question_text,
+                    description: row.description,
                     answers: []
                 };
 
