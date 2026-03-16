@@ -43,7 +43,7 @@ try{
     app.use(express.urlencoded({ extended: true }));
 
     app.use("/", dataRouter)
-
+    app.use("/auth", youtubeRouter);
     app.use("/login", authRouter);
     app.use("/users", usersRouter);
     app.use("/families", familiesRouter);
