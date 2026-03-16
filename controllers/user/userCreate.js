@@ -25,7 +25,7 @@ export default async function create(req, res) {
                 }
 
                 res.json({
-                    message: "User created",
+                    message: "user created",
                     id: result.insertId
                 });
 

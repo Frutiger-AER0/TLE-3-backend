@@ -19,7 +19,7 @@ export default function create(req, res) {
 
             if (users.length === 0) {
                 return res.status(404).json({
-                    error: "User not found"
+                    error: "user not found"
                 });
             }
 
@@ -27,7 +27,7 @@ export default function create(req, res) {
 
             if (user.family_id !== null) {
                 return res.status(400).json({
-                    error: "User already belongs to a family"
+                    error: "user already belongs to a family"
                 });
             }
 

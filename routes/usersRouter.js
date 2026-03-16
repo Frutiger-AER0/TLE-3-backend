@@ -1,9 +1,9 @@
 import express from "express";
 import db from "../database.js";
 
-import create from "../controllers/User/userCreate.js";
-import show from "../controllers/User/userDetail.js";
-import update from "../controllers/User/userUpdate.js";
+import create from "../controllers/user/userCreate.js";
+import show from "../controllers/user/userDetail.js";
+import update from "../controllers/user/userUpdate.js";
 
 const router = express.Router();
 
@@ -45,10 +45,10 @@ router.delete("/:id", (req, res) => {
         }
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "user not found" });
         }
 
-        res.json({ message: "User deleted" });
+        res.json({ message: "user deleted" });
     });
 });
 export default router;
