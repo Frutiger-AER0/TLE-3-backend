@@ -141,3 +141,201 @@ export async function getYouTubeStatus(req, res) {
         }
     );
 }
+
+export async function getYouTubeDetail(req, res) {
+    const userId = req.user?.id;
+
+    if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    try {
+        // Get stored YouTube tokens
+        db.query(
+            'SELECT access_token, refresh_token FROM youtube_tokens WHERE user_id = ?',
+            [userId],
+            async (err, results) => {
+                if (err) {
+                    return res.status(500).json({ message: "Database error", error: err.message });
+                }
+
+                if (results.length === 0) {
+                    return res.status(404).json({ connected: false, message: "YouTube not connected for this user" });
+                }
+
+                const { access_token, refresh_token } = results[0];
+
+                try {
+                    // Set credentials and create YouTube client
+                    const youtube = setCredentials({
+                        access_token,
+                        refresh_token
+                    });
+
+                    // Fetch detailed channel information
+                    const channelResponse = await youtube.channels.list({
+                        part: 'snippet,statistics,contentDetails',
+                        mine: true
+                    });
+
+                    const channel = channelResponse.data.items?.[0];
+                    if (!channel) {
+                        return res.status(400).json({ message: "Could not fetch YouTube channel details" });
+                    }
+
+                    // Get watch history playlist ID
+                    const watchHistoryPlaylistId = channel.contentDetails?.relatedPlaylists?.watchHistory;
+
+                    let watchedVideos = [];
+
+                    if (watchHistoryPlaylistId) {
+                        try {
+                            // Fetch videos from watch history playlist
+                            const watchHistoryResponse = await youtube.playlistItems.list({
+                                part: 'snippet,contentDetails',
+                                playlistId: watchHistoryPlaylistId,
+                                maxResults: 10
+                            });
+
+                            watchedVideos = watchHistoryResponse.data.items
+                                ?.map(item => ({
+                                    videoId: item.contentDetails.videoId,
+                                    title: item.snippet.title,
+                                    description: item.snippet.description,
+                                    publishedAt: item.snippet.publishedAt,
+                                    channelTitle: item.snippet.channelTitle,
+                                    addedToHistoryAt: item.snippet.publishedAt
+                                })) || [];
+                        } catch (historyError) {
+                            console.warn('Failed to fetch watch history:', historyError.message);
+                            // Watch history might be disabled or private
+                        }
+                    } else {
+                        console.warn('Watch history playlist not accessible');
+                    }
+
+                    // Format and return the data
+                    const youtubeData = {
+                        channel: {
+                            id: channel.id,
+                            title: channel.snippet.title,
+                            description: channel.snippet.description,
+                            customUrl: channel.snippet.customUrl,
+                            statistics: {
+                                viewCount: channel.statistics.viewCount,
+                                subscriberCount: channel.statistics.subscriberCount,
+                                videoCount: channel.statistics.videoCount,
+                                hiddenSubscriberCount: channel.statistics.hiddenSubscriberCount
+                            }
+                        },
+                        recentWatchedVideos: watchedVideos
+                    };
+
+                    res.json(youtubeData);
+
+                } catch (youtubeError) {
+                    console.error('Failed to fetch YouTube data:', youtubeError);
+                    return res.status(400).json({ message: "Failed to fetch YouTube data", error: youtubeError.message });
+                }
+            }
+        );
+
+    } catch (error) {
+        console.error("YouTube detail error:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+}
+
+export async function getLikedVideos(req, res) {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        // Get stored YouTube tokens
+        db.query(
+            'SELECT access_token, refresh_token FROM youtube_tokens WHERE user_id = ?',
+            [userId],
+            async (err, results) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ message: 'Database error', error: err.message });
+                }
+
+                if (!results || results.length === 0) {
+                    return res.status(404).json({ message: 'YouTube account not linked' });
+                }
+
+                try {
+                    // Set up YouTube client with stored credentials
+                    const tokens = {
+                        access_token: results[0].access_token,
+                        refresh_token: results[0].refresh_token
+                    };
+                    const youtube = setCredentials(tokens);
+
+                    // Fetch the "Liked Videos" playlist (ID: "LL")
+                    const likedResponse = await youtube.playlistItems.list({
+                        part: 'snippet,contentDetails',
+                        playlistId: 'LL', // Special ID for Liked Videos
+                        maxResults: 50
+                    });
+
+                    const playlistItems = likedResponse.data.items || [];
+
+                    if (playlistItems.length === 0) {
+                        return res.json({
+                            message: 'No liked videos found',
+                            count: 0,
+                            videos: []
+                        });
+                    }
+
+                    // Get video IDs from playlist items
+                    const videoIds = playlistItems.map(item => item.contentDetails.videoId).join(',');
+
+                    // Fetch detailed video information (categories, tags, etc.)
+                    const videosResponse = await youtube.videos.list({
+                        part: 'snippet,statistics,contentDetails',
+                        id: videoIds
+                    });
+
+                    const videoDetails = videosResponse.data.items || [];
+
+                    // Combine playlist data with video details
+                    const videos = playlistItems.map(playlistItem => {
+                        const videoDetail = videoDetails.find(v => v.id === playlistItem.contentDetails.videoId);
+
+                        return {
+                            videoId: playlistItem.contentDetails.videoId,
+                            title: playlistItem.snippet.title,
+                            channelTitle: playlistItem.snippet.videoOwnerChannelTitle,
+                            description: playlistItem.snippet.description,
+                            thumbnail: playlistItem.snippet.thumbnails.default.url,
+                            addedAt: playlistItem.contentDetails.videoAddedAt,
+                            categoryId: videoDetail?.snippet?.categoryId,
+                            tags: videoDetail?.snippet?.tags || [],
+                            duration: videoDetail?.contentDetails?.duration,
+                            viewCount: videoDetail?.statistics?.viewCount,
+                            likeCount: videoDetail?.statistics?.likeCount,
+                            commentCount: videoDetail?.statistics?.commentCount
+                        };
+                    });
+
+                    res.json({
+                        message: 'Liked videos retrieved successfully',
+                        count: videos.length,
+                        videos: videos
+                    });
+                } catch (error) {
+                    console.error('YouTube API error:', error);
+                    res.status(500).json({ message: 'Failed to fetch liked videos', error: error.message });
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Failed to fetch liked videos', error: error.message });
+    }
+}

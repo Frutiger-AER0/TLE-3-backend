@@ -1,5 +1,11 @@
 import express from 'express';
-import { initiateYouTubeAuth, handleYouTubeCallback, getYouTubeStatus } from '../Controllers/youtube/youtubeConnect.js';
+import {
+    initiateYouTubeAuth,
+    handleYouTubeCallback,
+    getYouTubeStatus,
+    getYouTubeDetail,
+    getLikedVideos
+} from '../Controllers/youtube/youtubeConnect.js';
 import { verifyToken } from '../middleware/auth.js';
 
 const youtubeRouter = express.Router();
@@ -26,5 +32,11 @@ youtubeRouter.get('/youtube/callback', (req, res) => {
 
 // Get YouTube connection status
 youtubeRouter.get('/youtube/status', verifyToken, getYouTubeStatus);
+
+// Get detailed YouTube data (channel info + recent videos)
+youtubeRouter.get('/youtube/detail', verifyToken, getYouTubeDetail);
+
+// Get liked videos playlist
+youtubeRouter.get('/youtube/liked-videos', verifyToken, getLikedVideos);
 
 export default youtubeRouter;
