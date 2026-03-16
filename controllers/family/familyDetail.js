@@ -12,6 +12,21 @@ export default function show(req, res) {
             return res.status(404).json({ error: "Family not found" });
         }
 
-        res.json(results[0]);
+        const family = results[0];
+
+        db.query(
+            "SELECT id, username, email, role, language, language_level, family_id, created_at FROM users WHERE family_id = ?",
+            [id],
+            (err, results) => {
+                if (err) {
+                    return res.status(500).json({ error: err.message });
+                }
+
+                res.json({
+                    ...family,
+                    users: results
+                });
+            }
+        );
     });
 }
