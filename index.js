@@ -1,6 +1,7 @@
 import express from 'express';
 import dataRouter from "./routes/dataRouter.js";
 
+import adminRouter from "./routes/adminRouter.js";
 import authRouter from "./routes/authRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
@@ -45,6 +46,7 @@ try{
 
     app.use("/login", authRouter);
     app.use("/users", usersRouter);
+    app.use("/admin", adminRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
 
