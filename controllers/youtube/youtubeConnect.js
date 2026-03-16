@@ -1,7 +1,7 @@
 import db from "../../database.js";
 import { getAuthUrl, getTokens, setCredentials } from "../../api/youtubeAuth.js";
 
-export default function initiateYouTubeAuth(req, res) {
+export function initiateYouTubeAuth(req, res) {
     try {
         const userId = req.user?.id; // Pass user ID from the JSon Web Token Middleware
         if (!userId) {
@@ -19,58 +19,79 @@ export default function initiateYouTubeAuth(req, res) {
     }
 }
 
-export async function handleYoutubeCallback(req, res) {
+export async function handleYouTubeCallback(req, res) {
     const { code, state: userId } = req.query;
 
     try {
+        console.log('OAuth callback received:', { code: code?.substring(0, 20) + '...', userId });
+
         if (!code || !userId) {
             return res.status(400).json({ message: "Missing authorization code or user ID" });
         }
 
         // Get tokens from Google
-        const tokens = await getTokens(code);
+        let tokens;
+        try {
+            tokens = await getTokens(code);
+            console.log('Tokens received:', { accessToken: tokens.access_token?.substring(0, 20) + '...' });
+        } catch (tokenError) {
+            console.error('Failed to get tokens:', tokenError);
+            return res.status(400).json({ message: "Failed to exchange authorization code", error: tokenError.message });
+        }
 
-        // Fetch YouTube channel details
-        const youtube = setCredentials(tokens);
-        const channelResponse = await youtube.channels.list({
-            part: 'snippet,statistics',
-            mine: true
-        });
+        // Fetch YouTube channel details with proper error handling
+        let youtube;
+        let channelResponse;
+        try {
+            youtube = setCredentials(tokens);
+            console.log('YouTube client created');
 
-        const channel = channelResponse.data.items[0];
+            channelResponse = await youtube.channels.list({
+                part: 'snippet,statistics',
+                mine: true
+            });
+            console.log('Channel response received:', channelResponse.data);
+        } catch (channelError) {
+            console.error('Failed to fetch YouTube channel:', channelError);
+            return res.status(400).json({ message: "Failed to fetch YouTube channel data", error: channelError.message });
+        }
+
+        const channel = channelResponse.data.items?.[0];
         if (!channel) {
+            console.error('No channel data found in response');
             return res.status(400).json({ message: "Could not fetch YouTube channel" });
         }
 
+        console.log('Storing channel:', channel.id, channel.snippet.title);
+
         // Store tokens AND YouTube details in database
         db.query(
-            `INSERT INTO youtube_tokens (user_id, access_token, refresh_token, youtube_channel_id, youtube_channel_name, youtube_channel_pic, created_at, updated_at) 
-             VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW()) 
-             ON DUPLICATE KEY UPDATE 
-             access_token = ?, 
-             refresh_token = ?, 
-             youtube_channel_id = ?, 
-             youtube_channel_name = ?, 
-             youtube_channel_pic = ?, 
-             updated_at = NOW()`,
+            `INSERT INTO youtube_tokens (user_id, access_token, refresh_token, youtube_channel_id, youtube_channel_name, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+                 ON DUPLICATE KEY UPDATE
+                                      access_token = ?,
+                                      refresh_token = ?,
+                                      youtube_channel_id = ?,
+                                      youtube_channel_name = ?,
+                                      updated_at = NOW()`,
             [
                 userId,
                 tokens.access_token,
                 tokens.refresh_token,
                 channel.id,
                 channel.snippet.title,
-                channel.snippet.thumbnails.default.url,
                 tokens.access_token,
                 tokens.refresh_token,
                 channel.id,
                 channel.snippet.title,
-                channel.snippet.thumbnails.default.url
             ],
             (err) => {
                 if (err) {
                     console.error("Database error:", err);
-                    return res.status(500).json({ message: "Failed to store YouTube data" });
+                    return res.status(500).json({ message: "Failed to store YouTube data", error: err.message });
                 }
+
+                console.log('YouTube tokens stored for user:', userId);
 
                 // Log the action
                 db.query(
@@ -81,7 +102,7 @@ export async function handleYoutubeCallback(req, res) {
                     }
                 );
 
-                res.redirect('http://localhost:5173/dashboard?youtube=connected&channel=' + channel.snippet.title);
+                res.redirect('http://localhost:3000/users');
             }
         );
 
@@ -91,7 +112,8 @@ export async function handleYoutubeCallback(req, res) {
     }
 }
 
-export async function getYoutubeStatus(req, res) {
+
+export async function getYouTubeStatus(req, res) {
     const userId = req.user?.id;
 
     if (!userId) {
@@ -99,7 +121,7 @@ export async function getYoutubeStatus(req, res) {
     }
 
     db.query(
-        'SELECT youtube_channel_id, youtube_channel_name, youtube_channel_pic, created_at FROM youtube_tokens WHERE user_id = ?',
+        'SELECT youtube_channel_id, youtube_channel_name, created_at FROM youtube_tokens WHERE user_id = ?',
         [userId],
         (err, results) => {
             if (err) {
@@ -114,7 +136,6 @@ export async function getYoutubeStatus(req, res) {
                 connected: true,
                 channelId: results[0].youtube_channel_id,
                 channelName: results[0].youtube_channel_name,
-                channelPic: results[0].youtube_channel_pic,
                 connectedAt: results[0].created_at
             });
         }

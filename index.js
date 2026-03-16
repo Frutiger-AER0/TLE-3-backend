@@ -10,7 +10,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-
 try{
 
     const app = express();
@@ -42,12 +41,12 @@ try{
     //Middelware to support application/x-www-form-urlencoded content-type
     app.use(express.urlencoded({ extended: true }));
 
-    app.use("/", dataRouter)
     app.use("/auth", youtubeRouter);
     app.use("/login", authRouter);
     app.use("/users", usersRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
+    app.use("/", dataRouter);
 
     app.listen(3000, () => console.log('Server running on port 3000'));
 }
