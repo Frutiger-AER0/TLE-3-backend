@@ -1,6 +1,6 @@
 import db from "../../database.js";
 
-export default function deleteUser(req, res) {
+export default function userDelete(req, res) {
     const targetUserId = Number(req.params.id);
     const loggedInUserId = Number(req.user.id);
     const loggedInUserRole = Number(req.user.role);

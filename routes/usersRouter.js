@@ -1,7 +1,7 @@
 import express from "express";
 import db from "../database.js";
 
-import Userdelete from "../controllers/user/userDelete.js";
+import userdelete from "../controllers/user/userDelete.js";
 import create from "../controllers/user/userCreate.js";
 import show from "../controllers/user/userDetail.js";
 import update from "../controllers/user/userUpdate.js";
@@ -40,6 +40,6 @@ router.get("/:id", requireAuth, show);
 router.patch("/:id", requireAuth, update);
 
 // DELETE /users/:id
-router.delete("/:id", requireAuth, Userdelete);
+router.delete("/:id", requireAuth, userdelete);
 
 export default router;
