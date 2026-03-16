@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import db from "../../database.js";
 
 export default async function create(req, res) {
-    const {username, email, password, role = 1, language = "english", language_level = "A1",} = req.body;
+    const {username, email, password, role = 0, language = "english", language_level = "A1",} = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).json({
