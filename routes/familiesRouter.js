@@ -1,9 +1,10 @@
-    import express from "express";
+import express from "express";
 import db from "../database.js";
 
 import create from "../controllers/family/familyCreate.js";
 import update from "../controllers/family/familyUpdate.js";
 import show from "../controllers/family/familyDetail.js";
+import requireAuth from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.options("/:id", (req, res) => {
 });
 
 // GET detail
-router.get("/:id", show);
+router.get("/:id", requireAuth, show);
 
 // PATCH /families/:id (partial update)
 router.patch("/:id", update);
