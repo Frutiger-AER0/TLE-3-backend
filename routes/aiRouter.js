@@ -1,7 +1,7 @@
 import express from "express";
 import { db } from "../database.js";
 import { createAIProfile } from "hugging_face_ai/youtubeAiProfile.js";
-import { generateThemes, getThemes } from "/Controllers/ai/theme.js";
+import { generateThemes, getThemes } from "/controllers/ai/theme.js";
 
 
 const router = express.Router();

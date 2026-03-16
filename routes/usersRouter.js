@@ -1,9 +1,9 @@
 import express from "express";
 import db from "../database.js";
 
-import create from "../Controllers/User/userCreate.js";
-import show from "../Controllers/User/userDetail.js";
-import update from "../Controllers/User/userUpdate.js";
+import create from "../controllers/User/userCreate.js";
+import show from "../controllers/User/userDetail.js";
+import update from "../controllers/User/userUpdate.js";
 
 const router = express.Router();
 

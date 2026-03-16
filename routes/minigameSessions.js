@@ -1,7 +1,7 @@
 import express from "express";
-import create from "../Controllers/minigameSessions/create.js";
-import show from "../Controllers/minigameSessions/show.js";
-import guess from "../Controllers/minigameSessions/guess.js";
+import create from "../controllers/minigameSessions/create.js";
+import show from "../controllers/minigameSessions/show.js";
+import guess from "../controllers/minigameSessions/guess.js";
 
 const router = express.Router();
 
