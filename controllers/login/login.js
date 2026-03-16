@@ -19,7 +19,7 @@ export default function login(req, res) {
         });
     }
 
-    db.query(`SELECT id, username, email, password, role, language, language_level FROM users WHERE email = ? LIMIT 1`, [email],
+    db.query(`SELECT id, username, email, password, role FROM users WHERE email = ? LIMIT 1`, [email],
         async (err, results) => {
             if (err) {
                 return res.status(500).json({
@@ -45,7 +45,7 @@ export default function login(req, res) {
                     });
                 }
 
-                const token = jwt.sign({id: user.id, username: user.username, email: user.email, role: user.role, language: user.language, language_level: user.language_level,},
+                const token = jwt.sign({id: user.id, username: user.username, email: user.email, role: user.role,},
                     process.env.JWT_SECRET,
                     {
                         expiresIn: process.env.JWT_EXPIRES_IN || "1d",
@@ -56,7 +56,7 @@ export default function login(req, res) {
                     access_token: token,
                     token_type: "Bearer",
                     expires_in: process.env.JWT_EXPIRES_IN || "1d",
-                    user: {id: user.id, username: user.username, email: user.email, role: user.role, language: user.language, language_level: user.language_level,},
+                    user: {id: user.id, username: user.username, email: user.email, role: user.role,},
                 });
 
             } catch (error) {

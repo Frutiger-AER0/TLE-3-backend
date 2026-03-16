@@ -4,8 +4,13 @@ import db from "../database.js";
 const dataRouter = express.Router()
 
 dataRouter.use((req,res, next)=>{
-
     res.setHeader("Access-Control-Allow-Origin", "*");
+
+    // Skip Accept header check for redirects and auth callbacks
+    if (req.method === 'GET' && (req.path.includes('youtube') || req.path.includes('callback'))) {
+        next();
+        return;
+    }
 
     console.log("Check accept header");
     if(req.headers.accept === "application/json"){
