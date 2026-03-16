@@ -28,5 +28,4 @@ router.post("/generate", generateThemes);
 router.get("/me", getThemes);
 
 
-
 export default router;

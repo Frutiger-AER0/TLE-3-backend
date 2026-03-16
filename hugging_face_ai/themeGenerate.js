@@ -7,6 +7,11 @@ dotenv.config();
 
 // THEMA'S GENEREREN
 async function generateThemesFromProfile(profile) {
+    const profileData = {
+        liked_video_titles: profile.liked_video_titles || "",
+        liked_video_descriptions: profile.liked_video_descriptions || "",
+        liked_video_tags: profile.liked_video_tags || "",
+    };
     const prompt = `
 Je bent een assistent die gebruikersinteresses omzet naar thema's.
 
@@ -19,10 +24,12 @@ Regels:
 - Geef alleen JSON terug
 - Geen uitleg
 - Geen markdown
-- Gebruik null als je iets niet weet
+- Kies per veld 1 beste waarde
+- Gebruik null als iets niet duidelijk af te leiden is
+- Baseer je alleen op de meegegeven data
 
 AI_PROFILE:
-${JSON.stringify(profile)}
+${JSON.stringify(profileData, null, 2)}
 `;
 
     const result = await hf.chatCompletion({
