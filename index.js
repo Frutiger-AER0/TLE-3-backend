@@ -25,7 +25,7 @@ try{
     //Middelware to support application/x-www-form-urlencoded content-type
     app.use(express.urlencoded({ extended: true }));
 
-    app.use("/youtube", youtubeRouter);
+    app.use("/auth", youtubeRouter);
     app.use("/users", usersRouter);
     app.use("/admin", adminRouter);
     app.use("/login", authRouter);
