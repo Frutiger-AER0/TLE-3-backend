@@ -1,9 +1,13 @@
 import express from "express";
 import db from "../database.js";
 
+import userdelete from "../controllers/user/userDelete.js";
 import create from "../controllers/user/userCreate.js";
 import show from "../controllers/user/userDetail.js";
 import update from "../controllers/user/userUpdate.js";
+
+
+import requireAuth from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -31,24 +35,18 @@ router.options("/:id", (req, res) => {
 });
 
 // GET detail
-router.get("/:id", show);
+router.get("/:id", requireAuth, show);
 // PATCH /users/:id (partial update)
-router.patch("/:id", update);
+router.patch("/:id", requireAuth, update);
 
 // DELETE /users/:id
-router.delete("/:id", (req, res) => {
-    const userId = req.params.id;
-
-    db.query("DELETE FROM users WHERE id = ?", [userId], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+router.delete("/:id", requireAuth, userdelete);
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "user not found" });
+            return res.status(404).json({ message: "User not found" });
         }
 
-        res.json({ message: "user deleted" });
+        res.json({ message: "User deleted" });
     });
 });
 export default router;
