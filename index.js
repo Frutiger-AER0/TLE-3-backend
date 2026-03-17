@@ -1,21 +1,17 @@
 import express from 'express';
 import dataRouter from "./routes/dataRouter.js";
 import youtubeRouter from "./routes/youtubeRouter.js";
-
 import adminRouter from "./routes/adminRouter.js";
 import authRouter from "./routes/authRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
-
 import dotenv from "dotenv";
 
 dotenv.config();
 
-
 try{
-
     const app = express();
 
     //Middelware to support application/JSON content-type

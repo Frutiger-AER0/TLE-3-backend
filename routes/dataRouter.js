@@ -42,20 +42,48 @@ dataRouter.get('/users', (req, res) => {
 });
 
 dataRouter.get('/ai_profiles', (req, res) => {
-    db.query('SELECT * FROM ai_profiles', (err, results) => {
-        if (results.length === 0){
-            res.status(404).json({message: "Collection not found."})
-        }else
+    const userId = req.query.user_id;
+
+    let query = 'SELECT * FROM ai_profiles';
+    const params = [];
+
+    if (userId) {
+        query += ' WHERE user_id = ?';
+        params.push(userId);
+    }
+
+    db.query(query, params, (err, results) => {
+        if (err) {
+            return res.status(500).json({message: "Database error", error: err.message});
+        }
+        if (results.length === 0) {
+            res.status(404).json({message: "Collection not found."});
+        } else {
             res.status(200).json(results);
+        }
     });
 });
 
 dataRouter.get('/themes', (req, res) => {
-    db.query('SELECT * FROM themes', (err, results) => {
-        if (results.length === 0){
-            res.status(404).json({message: "Collection not found."})
-        }else
+    const profileId = req.query.profile_id;
+
+    let query = 'SELECT * FROM themes';
+    const params = [];
+
+    if (profileId) {
+        query += ' WHERE profile_id = ?';
+        params.push(profileId);
+    }
+
+    db.query(query, params, (err, results) => {
+        if (err) {
+            return res.status(500).json({message: "Database error", error: err.message});
+        }
+        if (results.length === 0) {
+            res.status(404).json({message: "Collection not found."});
+        } else {
             res.status(200).json(results);
+        }
     });
 });
 
