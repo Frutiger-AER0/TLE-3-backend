@@ -1,6 +1,7 @@
 import express from "express";
 import { createAIProfile } from "../hf_ai/youtubeAiProfile.js";
 import { generateThemes, getThemes } from "../controllers/ai/theme.js";
+import requireAuth from "../middleware/auth.js";
 
 
 
@@ -24,8 +25,8 @@ const router = express.Router();
 // });
 
 // Endpoint om themes te genereren
-router.post("/generate", generateThemes);
-router.get("/me", getThemes);
+router.post("/generate", requireAuth,generateThemes);
+router.get("/me", requireAuth,getThemes);
 
 
 export default router;
