@@ -10,6 +10,7 @@ import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
 
 import dotenv from "dotenv";
+import recommendationRouter from "./routes/recommendationRouter.js";
 
 dotenv.config();
 
@@ -29,7 +30,8 @@ try{
     app.use("/login", authRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
-    app.use("/learningModules", learningModulesRouter)
+    app.use("/learningModules", learningModulesRouter);
+    app.use("/recommendation", recommendationRouter);
     app.use("/", dataRouter);
 
 
