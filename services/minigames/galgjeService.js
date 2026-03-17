@@ -2,6 +2,26 @@ const activeGames = new Map();
 
 const WORDS = ["pasta", "pannekoek", "appel", "pizza", "bord"];
 
+const activeMatches = new Map();
+
+export function createGalgjeMatch(matchId, minigameId, players) {
+    const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+    const game = {
+        word,
+        guessedLetters: [],
+        wrongLetters: [],
+        maxWrong: 6,
+        status: "active",
+        players,
+        minigameId
+    };
+
+    activeMatches.set(Number(matchId), game);
+
+    return buildState(matchId, game);
+}
+
 function maskWord(word, guessedLetters) {
     return word
         .split("")
@@ -117,6 +137,7 @@ export function guessWord(sessionId, guessedWord) {
         state: buildState(Number(sessionId), game)
     };
 }
+
 
 export function getInternalGame(sessionId) {
     return activeGames.get(Number(sessionId));

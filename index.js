@@ -8,6 +8,8 @@ import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
+import matchesRouter from "./routes/matchesRouter.js";
+
 
 import dotenv from "dotenv";
 
@@ -29,7 +31,8 @@ try{
     app.use("/login", authRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
-    app.use("/learningModules", learningModulesRouter)
+    app.use("/minigame-matches", matchesRouter);
+    app.use("/learningModules", learningModulesRouter);
     app.use("/", dataRouter);
 
 
