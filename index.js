@@ -8,11 +8,35 @@ import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
 import dotenv from "dotenv";
+import db from "./database.js";
 
 dotenv.config();
 
 try{
     const app = express();
+
+    app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        next();
+    });
+
+    app.get('/', (req, res) => {
+        db.query('SELECT * FROM users', (err, results) => {
+            if (err) throw err;
+            res.json(results);
+        });
+    });
+
+    app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+
+        if (req.method === "OPTIONS") {
+            return res.sendStatus(204);
+        }
+        next();
+    });
 
     //Middelware to support application/JSON content-type
     app.use(express.json());
