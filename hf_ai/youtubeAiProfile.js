@@ -1,6 +1,6 @@
 import axios from "axios";
 import { InferenceClient } from "@huggingface/inference";
-import { db } from "../database.js";
+import db from "../database.js";
 
 // CONFIG
 

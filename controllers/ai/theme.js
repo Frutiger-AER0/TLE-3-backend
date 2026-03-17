@@ -1,4 +1,4 @@
-import { generateThemesForUser, getThemesForUser } from "hugging_face_ai/themeGenerate.js";
+import { generateThemesForUser, getThemesForUser } from "../../hf_ai/themeGenerate.js";
 
 export async function generateThemes(req, res) {
     try {
