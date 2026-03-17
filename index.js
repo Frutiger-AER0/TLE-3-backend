@@ -8,6 +8,7 @@ import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
+import db from "./database.js";
 
 import dotenv from "dotenv";
 

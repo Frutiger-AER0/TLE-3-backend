@@ -39,14 +39,14 @@ router.get("/:id", requireAuth, show);
 // PATCH /users/:id (partial update)
 router.patch("/:id", requireAuth, update);
 
-// DELETE /users/:id
-router.delete("/:id", requireAuth, userdelete);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({ message: "User deleted" });
-    });
-});
+// // DELETE /users/:id
+// router.delete("/:id", requireAuth, userdelete);
+//
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+//
+//         res.json({ message: "User deleted" });
+//     });
+// });
 export default router;
