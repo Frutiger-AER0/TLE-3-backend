@@ -1,0 +1,306 @@
+import dotenv from "dotenv";
+import db from "../database.js";
+import { InferenceClient } from "@huggingface/inference";
+
+const hf = new InferenceClient(process.env.HF_TOKEN);
+dotenv.config();
+
+async function generateThemesFromProfile(profile) {
+    const profileData = {
+        liked_video_titles: profile.liked_video_titles || "",
+        liked_video_descriptions: profile.liked_video_descriptions || "",
+        liked_video_tags: profile.liked_video_tags || "",
+    };
+
+    const prompt = `
+Je bent een assistent die gebruikersinteresses omzet naar thema's.
+
+Analyseer het volgende ai_profile en geef ALLEEN geldige JSON terug.
+
+Gebruik exact deze keys:
+movie, movie_genre, artist, food, place, music, music_genre, holiday_country, clothing_style, animal, color
+
+Regels:
+- Geef alleen JSON terug
+- Geen uitleg
+- Geen markdown
+- Kies per veld 1 beste waarde
+- Gebruik null als iets niet duidelijk af te leiden is
+- Baseer je alleen op de meegegeven data
+AI_PROFILE:
+${JSON.stringify(profileData)}
+`;
+
+    const result = await hf.chatCompletion({
+        model: "CohereLabs/tiny-aya-water",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 8192,
+    });
+
+    let content = result.choices?.[0]?.message?.content;
+
+    if (!content) {
+        throw new Error("Geen antwoord van AI");
+    }
+
+    content = content.replace(/```json|```/g, "").trim();
+    const parsedThemes = JSON.parse(content);
+
+    console.log("=== AI GENERATED THEMES ===");
+    console.log(JSON.stringify(parsedThemes, null, 2));
+
+    return parsedThemes
+}
+
+function getAiProfile(userId, callback) {
+    db.query(
+        `SELECT * FROM ai_profiles WHERE user_id = ? ORDER BY created_at DESC LIMIT 1`,
+        [userId],
+        (err, results) => {
+            if (err) return callback(err);
+            callback(null, results[0] || null);
+        }
+    );
+}
+
+function saveThemes(profileId, themes, callback) {
+    console.log("=== SAVING THEMES ===");
+    console.log("Profile ID:", profileId);
+    console.log("Themes object:", JSON.stringify(themes, null, 2));
+
+    db.query(
+        `SELECT id FROM themes WHERE profile_id = ? LIMIT 1`,
+        [profileId],
+        (err, existing) => {
+            if (err) return callback(err);
+
+            console.log("Existing themes found:", existing.length > 0);
+
+            if (existing.length > 0) {
+                console.log("UPDATING existing themes...");
+                db.query(
+                    `UPDATE themes SET movie=?, movie_genre=?, artist=?, food=?, place=?, music=?, music_genre=?, holiday_country=?, clothing_style=?, animal=?, color=?, created_at=NOW() WHERE profile_id=?`,
+                    [
+                        themes.movie,
+                        themes.movie_genre,
+                        themes.artist,
+                        themes.food,
+                        themes.place,
+                        themes.music,
+                        themes.music_genre,
+                        themes.holiday_country,
+                        themes.clothing_style,
+                        themes.animal,
+                        themes.color,
+                        profileId,
+                    ],
+                    (err, result) => {
+                        console.log("Update result:", err ? err : result);
+                        callback(err, result);
+                    }
+                );
+            } else {
+                console.log("INSERTING new themes...");
+                db.query(
+                    `INSERT INTO themes (profile_id, movie, movie_genre, artist, food, place, music, music_genre, holiday_country, clothing_style, animal, color, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+                    [
+                        profileId,
+                        themes.movie,
+                        themes.movie_genre,
+                        themes.artist,
+                        themes.food,
+                        themes.place,
+                        themes.music,
+                        themes.music_genre,
+                        themes.holiday_country,
+                        themes.clothing_style,
+                        themes.animal,
+                        themes.color,
+                    ],
+                    (err, result) => {
+                        console.log("Insert result:", err ? err : result);
+                        callback(err, result);
+                    }
+                );
+            }
+        }
+    );
+}
+
+export function generateThemesForUser(userId, callback) {
+    getAiProfile(userId, async (err, profile) => {
+        if (err) return callback(err);
+        if (!profile) return callback(new Error("Geen ai_profile gevonden"));
+
+        try {
+            const themes = await generateThemesFromProfile(profile);
+
+            saveThemes(profile.id, themes, (saveErr) => {
+                if (saveErr) return callback(saveErr);
+
+                callback(null, themes);
+            });
+        } catch (error) {
+            callback(error);
+        }
+    });
+}
+
+export function getThemesForUser(userId, callback) {
+    getAiProfile(userId, (err, profile) => {
+        if (err) return callback(err);
+        if (!profile) return callback(null, null);
+
+        db.query(
+            `SELECT * FROM themes WHERE profile_id = ? LIMIT 1`,
+            [profile.id],
+            (err, results) => {
+                if (err) return callback(err);
+
+                callback(null, results[0] || null);
+            }
+        );
+    });
+}
+
+// // THEMA'S GENEREREN
+// async function generateThemesFromProfile(profile) {
+//     const profileData = {
+//         liked_video_titles: profile.liked_video_titles || "",
+//         liked_video_descriptions: profile.liked_video_descriptions || "",
+//         liked_video_tags: profile.liked_video_tags || "",
+//     };
+//     const prompt = `
+// Je bent een assistent die gebruikersinteresses omzet naar thema's.
+//
+// Analyseer het volgende ai_profile en geef ALLEEN geldige JSON terug.
+//
+// Gebruik exact deze keys:
+// movie, movie_genre, artist, food, place, music, music_genre, holiday_country, clothing_style, animal, color
+//
+// Regels:
+// - Geef alleen JSON terug
+// - Geen uitleg
+// - Geen markdown
+// - Kies per veld 1 beste waarde
+// - Gebruik null als iets niet duidelijk af te leiden is
+// - Baseer je alleen op de meegegeven data
+//
+// AI_PROFILE:
+// ${JSON.stringify(profileData, null, 2)}
+// `;
+//
+//     const result = await hf.chatCompletion({
+//         model: "CohereLabs/tiny-aya-water",
+//         messages: [
+//             {
+//                 role: "user",
+//                 content: prompt,
+//             },
+//         ],
+//         max_tokens: 300,
+//         temperature: 0.6,
+//     });
+//
+//     const content = result.choices?.[0]?.message?.content;
+//
+//     if (!content) {
+//         throw new Error("Geen antwoord van Hugging Face.");
+//     }
+//
+//     try {
+//         return JSON.parse(content);
+//     } catch {
+//         throw new Error("AI gaf geen geldige JSON terug.");
+//     }
+// }
+//
+// /*
+//     AI PROFILE OPHALEN
+// */
+// async function getAiProfile(userId) {
+//     const [rows] = await db.query(
+//         `SELECT * FROM ai_profiles WHERE user_id = ? LIMIT 1`, [userId]
+//     );
+//
+//     return rows[0] || null;
+// }
+//
+// // THEMES OPSLAAN
+// async function saveThemes(profileId, themes) {
+//     const [existing] = await db.query(
+//         `SELECT id FROM themes WHERE profile_id = ?`,
+//         [profileId]
+//     );
+//
+//     if (existing.length > 0) {
+//         await db.query(
+//             `UPDATE themes SET movie = ?, movie_genre = ?, artist = ?, food = ?, place = ?, music = ?, music_genre = ?, holiday_country = ?, clothing_style = ?, animal = ?, color = ?, timestamp = NOW() WHERE profile_id = ?`,
+//             [
+//                 themes.movie,
+//                 themes.movie_genre,
+//                 themes.artist,
+//                 themes.food,
+//                 themes.place,
+//                 themes.music,
+//                 themes.music_genre,
+//                 themes.holiday_country,
+//                 themes.clothing_style,
+//                 themes.animal,
+//                 themes.color,
+//                 profileId,
+//             ]
+//         );
+//
+//         return "updated";
+//     }
+//
+//     await db.query(
+//         `INSERT INTO themes (profile_id, movie, movie_genre, artist, food, place, music, music_genre, holiday_country, clothing_style, animal, color, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+//         [
+//             profileId,
+//             themes.movie,
+//             themes.movie_genre,
+//             themes.artist,
+//             themes.food,
+//             themes.place,
+//             themes.music,
+//             themes.music_genre,
+//             themes.holiday_country,
+//             themes.clothing_style,
+//             themes.animal,
+//             themes.color,
+//         ]
+//     );
+//
+//     return "inserted";
+// }
+//
+// export async function generateThemesForUser(userId) {
+//     const profile = await getAiProfile(userId);
+//
+//     if (!profile) {
+//         throw new Error("Geen ai_profile gevonden.");
+//     }
+//
+//     const themes = await generateThemesFromProfile(profile);
+//
+//     await saveThemes(profile.id, themes);
+//
+//     return themes;
+// }
+//
+// // THEMES OPHALEN
+// export async function getThemesForUser(userId) {
+//     const profile = await getAiProfile(userId);
+//
+//     if (!profile) {
+//         return null;
+//     }
+//
+//     const [rows] = await db.query(
+//         `SELECT * FROM themes WHERE profile_id = ? LIMIT 1`, [profile.id]
+//     );
+//
+//     return rows[0] || null;
+// }

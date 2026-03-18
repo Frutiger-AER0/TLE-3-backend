@@ -8,6 +8,7 @@ import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
+import db from "./database.js";
 import matchesRouter from "./routes/matchesRouter.js";
 
 
@@ -15,10 +16,25 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+import aiRouter from "./routes/aiRouter.js";
 
 try{
-
     const app = express();
+    app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        next();
+    });
+
+    app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+
+        if (req.method === "OPTIONS") {
+            return res.sendStatus(204);
+        }
+        next();
+    });
 
     //Middelware to support application/JSON content-type
     app.use(express.json());
@@ -31,6 +47,8 @@ try{
     app.use("/login", authRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
+    app.use("/ai", aiRouter);
+    app.use("/learningModules", learningModulesRouter)
     app.use("/minigame-matches", matchesRouter);
     app.use("/learningModules", learningModulesRouter);
     app.use("/", dataRouter);
