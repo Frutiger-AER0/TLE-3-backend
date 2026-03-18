@@ -102,7 +102,7 @@ export async function handleYouTubeCallback(req, res) {
                     }
                 );
 
-                res.redirect('http://145.24.237.168:8000/users');
+                res.redirect('localhost:8000/users');
             }
         );
 
