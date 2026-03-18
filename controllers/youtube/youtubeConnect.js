@@ -279,7 +279,7 @@ export async function getLikedVideos(req, res) {
                     const likedResponse = await youtube.playlistItems.list({
                         part: 'snippet,contentDetails',
                         playlistId: 'LL', // Special ID for Liked Videos
-                        maxResults: 50
+                        maxResults: 25
                     });
 
                     const playlistItems = likedResponse.data.items || [];
@@ -337,5 +337,126 @@ export async function getLikedVideos(req, res) {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ message: 'Failed to fetch liked videos', error: error.message });
+    }
+}
+
+export async function postLikedVideos(req, res) {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        // Get stored YouTube tokens
+        db.query(
+            'SELECT access_token, refresh_token FROM youtube_tokens WHERE user_id = ?',
+            [userId],
+            async (err, results) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ message: 'Database error', error: err.message });
+                }
+
+                if (!results || results.length === 0) {
+                    return res.status(404).json({ message: 'YouTube account not linked' });
+                }
+
+                try {
+                    // Set up YouTube client with stored credentials
+                    const tokens = {
+                        access_token: results[0].access_token,
+                        refresh_token: results[0].refresh_token
+                    };
+                    const youtube = setCredentials(tokens);
+
+                    // Fetch the "Liked Videos" playlist
+                    const likedResponse = await youtube.playlistItems.list({
+                        part: 'snippet,contentDetails',
+                        playlistId: 'LL',
+                        maxResults: 25
+                    });
+
+                    const playlistItems = likedResponse.data.items || [];
+
+                    if (playlistItems.length === 0) {
+                        return res.json({
+                            message: 'No liked videos found',
+                            stored: false
+                        });
+                    }
+
+                    // Get video IDs from playlist items
+                    const videoIds = playlistItems.map(item => item.contentDetails.videoId).join(',');
+
+                    // Fetch detailed video information
+                    const videosResponse = await youtube.videos.list({
+                        part: 'snippet,statistics,contentDetails',
+                        id: videoIds
+                    });
+
+                    const videoDetails = videosResponse.data.items || [];
+
+                    // Extract titles, descriptions, and tags
+                    const titles = [];
+                    const descriptions = [];
+                    const tagsSet = new Set(); // Use Set to eliminate duplicates
+
+                    playlistItems.forEach(playlistItem => {
+                        const videoDetail = videoDetails.find(v => v.id === playlistItem.contentDetails.videoId);
+
+                        titles.push(playlistItem.snippet.title);
+                        descriptions.push(playlistItem.snippet.description || '');
+
+                        // Add tags to set (automatically eliminates duplicates)
+                        if (videoDetail?.snippet?.tags) {
+                            videoDetail.snippet.tags.forEach(tag => tagsSet.add(tag));
+                        }
+                    });
+
+                    // Convert Set to array
+                    const uniqueTags = Array.from(tagsSet);
+
+                    // Store in database - use INSERT ... ON DUPLICATE KEY UPDATE
+                    // This will insert a new row if user_id doesn't exist, or update if it does
+                    db.query(
+                        `INSERT INTO ai_profiles (user_id, liked_video_titles, liked_video_descriptions, liked_video_tags, created_at)
+                         VALUES (?, ?, ?, ?, NOW())
+                             ON DUPLICATE KEY UPDATE
+                                                  liked_video_titles = VALUES(liked_video_titles),
+                                                  liked_video_descriptions = VALUES(liked_video_descriptions),
+                                                  liked_video_tags = VALUES(liked_video_tags)`,
+                        [
+                            userId,
+                            JSON.stringify(titles),
+                            JSON.stringify(descriptions),
+                            JSON.stringify(uniqueTags)
+                        ],
+                        (updateErr, results) => {
+                            if (updateErr) {
+                                console.error('Failed to store liked videos:', updateErr);
+                                return res.status(500).json({
+                                    message: 'Failed to store liked videos data',
+                                    error: updateErr.message
+                                });
+                            }
+
+                            res.json({
+                                message: 'Liked videos stored successfully',
+                                stored: true,
+                                videoCount: titles.length,
+                                uniqueTagCount: uniqueTags.length
+                            });
+                        }
+                    );
+
+                } catch (error) {
+                    console.error('YouTube API error:', error);
+                    res.status(500).json({ message: 'Failed to fetch liked videos', error: error.message });
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Failed to process liked videos', error: error.message });
     }
 }
