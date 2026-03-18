@@ -279,7 +279,7 @@ export async function getLikedVideos(req, res) {
                     const likedResponse = await youtube.playlistItems.list({
                         part: 'snippet,contentDetails',
                         playlistId: 'LL', // Special ID for Liked Videos
-                        maxResults: 50
+                        maxResults: 25
                     });
 
                     const playlistItems = likedResponse.data.items || [];
@@ -373,7 +373,7 @@ export async function postLikedVideos(req, res) {
                     const likedResponse = await youtube.playlistItems.list({
                         part: 'snippet,contentDetails',
                         playlistId: 'LL',
-                        maxResults: 50
+                        maxResults: 25
                     });
 
                     const playlistItems = likedResponse.data.items || [];
