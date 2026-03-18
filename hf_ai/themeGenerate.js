@@ -44,13 +44,17 @@ ${JSON.stringify(profileData)}
     }
 
     content = content.replace(/```json|```/g, "").trim();
+    const parsedThemes = JSON.parse(content);
 
-    return JSON.parse(content);
+    console.log("=== AI GENERATED THEMES ===");
+    console.log(JSON.stringify(parsedThemes, null, 2));
+
+    return parsedThemes
 }
 
 function getAiProfile(userId, callback) {
     db.query(
-        `SELECT * FROM ai_profiles WHERE user_id = ? LIMIT 1`,
+        `SELECT * FROM ai_profiles WHERE user_id = ? ORDER BY created_at DESC LIMIT 1`,
         [userId],
         (err, results) => {
             if (err) return callback(err);
@@ -60,13 +64,20 @@ function getAiProfile(userId, callback) {
 }
 
 function saveThemes(profileId, themes, callback) {
+    console.log("=== SAVING THEMES ===");
+    console.log("Profile ID:", profileId);
+    console.log("Themes object:", JSON.stringify(themes, null, 2));
+
     db.query(
         `SELECT id FROM themes WHERE profile_id = ? LIMIT 1`,
         [profileId],
         (err, existing) => {
             if (err) return callback(err);
 
+            console.log("Existing themes found:", existing.length > 0);
+
             if (existing.length > 0) {
+                console.log("UPDATING existing themes...");
                 db.query(
                     `UPDATE themes SET movie=?, movie_genre=?, artist=?, food=?, place=?, music=?, music_genre=?, holiday_country=?, clothing_style=?, animal=?, color=?, created_at=NOW() WHERE profile_id=?`,
                     [
@@ -83,9 +94,13 @@ function saveThemes(profileId, themes, callback) {
                         themes.color,
                         profileId,
                     ],
-                    callback
+                    (err, result) => {
+                        console.log("Update result:", err ? err : result);
+                        callback(err, result);
+                    }
                 );
             } else {
+                console.log("INSERTING new themes...");
                 db.query(
                     `INSERT INTO themes (profile_id, movie, movie_genre, artist, food, place, music, music_genre, holiday_country, clothing_style, animal, color, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
                     [
@@ -102,7 +117,10 @@ function saveThemes(profileId, themes, callback) {
                         themes.animal,
                         themes.color,
                     ],
-                    callback
+                    (err, result) => {
+                        console.log("Insert result:", err ? err : result);
+                        callback(err, result);
+                    }
                 );
             }
         }
