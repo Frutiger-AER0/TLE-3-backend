@@ -35,7 +35,9 @@ export default async function show(req, res) {
             answers.is_correct,
 
             users.id AS user_id,
-            users.username
+            users.username,
+
+            answers.response
 
         FROM quizzes
 
@@ -104,7 +106,8 @@ export default async function show(req, res) {
                     id: row.answer_id,
                     user_id: row.user_id,
                     username: row.username,
-                    is_correct: row.is_correct
+                    is_correct: row.is_correct,
+                    response: row.response
                 });
             }
 
