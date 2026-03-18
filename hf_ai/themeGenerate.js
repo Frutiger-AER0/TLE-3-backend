@@ -34,7 +34,7 @@ ${JSON.stringify(profileData)}
     const result = await hf.chatCompletion({
         model: "CohereLabs/tiny-aya-water",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 300,
+        max_tokens: 8192,
     });
 
     let content = result.choices?.[0]?.message?.content;
