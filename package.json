@@ -19,6 +19,8 @@
     "dev": "node --env-file=.env --watch index.js"
   },
   "dependencies": {
+    "@huggingface/inference": "^4.13.15",
+    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",

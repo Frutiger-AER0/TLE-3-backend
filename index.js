@@ -7,14 +7,17 @@ import usersRouter from "./routes/usersRouter.js";
 import familiesRouter from "./routes/familiesRouter.js";
 import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
-import dotenv from "dotenv";
 import db from "./database.js";
+import matchesRouter from "./routes/matchesRouter.js";
+
+import dotenv from "dotenv";
 
 dotenv.config();
 
+import aiRouter from "./routes/aiRouter.js";
+
 try{
     const app = express();
-
     app.use((req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*");
         next();
@@ -49,7 +52,10 @@ try{
     app.use("/login", authRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
+    app.use("/ai", aiRouter);
     app.use("/learningModules", learningModulesRouter)
+    app.use("/minigame-matches", matchesRouter);
+    app.use("/learningModules", learningModulesRouter);
     app.use("/", dataRouter);
 
 

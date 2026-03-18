@@ -4,7 +4,8 @@ import {
     handleYouTubeCallback,
     getYouTubeStatus,
     getYouTubeDetail,
-    getLikedVideos
+    getLikedVideos,
+    postLikedVideos
 } from '../Controllers/youtube/youtubeConnect.js';
 import { verifyToken } from '../middleware/auth.js';
 
@@ -38,5 +39,8 @@ youtubeRouter.get('/youtube/detail', verifyToken, getYouTubeDetail);
 
 // Get liked videos playlist
 youtubeRouter.get('/youtube/liked-videos', verifyToken, getLikedVideos);
+
+// POST liked videos to database
+youtubeRouter.post('/youtube/liked-videos', verifyToken, postLikedVideos);
 
 export default youtubeRouter;

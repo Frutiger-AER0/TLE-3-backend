@@ -24,13 +24,11 @@ export default function userDelete(req, res) {
                     error: err.message
                 });
             }
-
             if (result.affectedRows === 0) {
                 return res.status(404).json({
                     message: "User not found"
                 });
             }
-
             return res.json({
                 message: "User deleted"
             });
