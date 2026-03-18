@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+
 import db from "../../database.js";
 
 export default async function create(req, res) {

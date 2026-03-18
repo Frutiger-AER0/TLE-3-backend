@@ -1,5 +1,6 @@
 import db from "../../database.js";
 
+
 export default function show(req, res) {
     const { id } = req.params;
 
