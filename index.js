@@ -9,12 +9,13 @@ import minigameSessions from './routes/minigameSessions.js';
 import learningModulesRouter from "./routes/learningModulesRouter.js";
 import db from "./database.js";
 import matchesRouter from "./routes/matchesRouter.js";
+import aiRouter from "./routes/aiRouter.js";
+import apiKeysRouter from "./routes/apiKeysRouter.js";
+import { verifyApiKey } from "./middleware/apiKey.js";
 
 import dotenv from "dotenv";
 
 dotenv.config();
-
-import aiRouter from "./routes/aiRouter.js";
 
 try{
     const app = express();
@@ -46,10 +47,15 @@ try{
     //Middelware to support application/x-www-form-urlencoded content-type
     app.use(express.urlencoded({ extended: true }));
 
+    app.use("/login", authRouter);
     app.use("/auth", youtubeRouter);
+
+    // API Key middleware - applies to all routes below
+    console.log(`API key is required? ${process.env.REQUIRE_API_KEY === "true" ? "ENABLED" : "DISABLED"}`);
+    app.use(verifyApiKey);
+
     app.use("/users", usersRouter);
     app.use("/admin", adminRouter);
-    app.use("/login", authRouter);
     app.use("/families", familiesRouter);
     app.use("/minigame-sessions", minigameSessions);
     app.use("/ai", aiRouter);

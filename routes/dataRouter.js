@@ -43,13 +43,48 @@ dataRouter.get('/users', (req, res) => {
 
 dataRouter.get('/ai_profiles', (req, res) => {
     const userId = req.query.user_id;
+    const profileId = req.query.id;
+    const likedVideoTitles = req.query.liked_video_titles;
+    const likedVideoDescriptions = req.query.liked_video_descriptions;
+    const likedVideoTags = req.query.liked_video_tags;
 
     let query = 'SELECT * FROM ai_profiles';
     const params = [];
+    const conditions = [];
 
+    // Filter by user_id
     if (userId) {
-        query += ' WHERE user_id = ?';
+        conditions.push('user_id = ?');
         params.push(userId);
+    }
+
+    // Filter by id
+    if (profileId) {
+        conditions.push('id = ?');
+        params.push(profileId);
+    }
+
+    // Filter by liked_video_titles (partial match)
+    if (likedVideoTitles) {
+        conditions.push('liked_video_titles LIKE ?');
+        params.push(`%${likedVideoTitles}%`);
+    }
+
+    // Filter by liked_video_descriptions (partial match)
+    if (likedVideoDescriptions) {
+        conditions.push('liked_video_descriptions LIKE ?');
+        params.push(`%${likedVideoDescriptions}%`);
+    }
+
+    // Filter by liked_video_tags (partial match)
+    if (likedVideoTags) {
+        conditions.push('liked_video_tags LIKE ?');
+        params.push(`%${likedVideoTags}%`);
+    }
+
+    // Build WHERE clause if there are any conditions
+    if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
     }
 
     db.query(query, params, (err, results) => {
@@ -63,7 +98,6 @@ dataRouter.get('/ai_profiles', (req, res) => {
         }
     });
 });
-
 dataRouter.get('/themes', (req, res) => {
     const profileId = req.query.profile_id;
 
