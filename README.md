@@ -1,6 +1,6 @@
 ## 🎯 Project Overview
 
-User Data API is a RESTful backend that collects user activity via the YouTube Data API and transforms it into an AI-generated profile using Hugging Face models.
+Know your AI API is a RESTful backend that collects user activity via the YouTube Data API and transforms it into an AI-generated profile using Hugging Face models.
 
 The goal?
 👉 Help users understand how their data is interpreted by AI systems—and expose the gap between perception and reality.
@@ -74,9 +74,8 @@ npm install
 
 📦 3. Set up the Database
 
-[Download the Database]()
-
-- Import the ....... file into your MySQL server (e.g., via phpMyAdmin or MySQL CLI).
+- Create a MySQL database.
+- Import the provided SQL schema into your MySQL server (e.g., via phpMyAdmin or MySQL CLI).
 
 🔐 4. Environment Variables
 
@@ -332,7 +331,7 @@ erDiagram
 
 ## API Endpoints
 
-[Download the Postman collection]()
+[Download the Postman collection](documents/full_postman_collection.json)
 1. Open Postman
 2. Click Import
 3. Drag & Drop file (or select it)
@@ -504,6 +503,7 @@ These themes represent the user's interests and preferences.
 The AI_PROFILES table contains YouTube data from the user. It forms the input for the AI analysis.
 
 ```mermaid
+erDiagram
     AI_PROFILES {
         bigint id PK
         bigint user_id FK
@@ -516,6 +516,7 @@ The AI_PROFILES table contains YouTube data from the user. It forms the input fo
 The THEMES table contains the generated interests of the user.
 
 ```mermaid
+erDiagram
     THEMES {
         bigint id PK
         bigint profile_id FK
