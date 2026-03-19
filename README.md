@@ -434,8 +434,6 @@ src/
 ├── package.json
 ├── package-lock.json
 ├── README.md
-├── External Libraries/
-├── Scratches and Consoles/  
 ```
 ## Deployment
 1. Host the project on a server (e.g., Heroku, AWS, DigitalOcean, VPS)
@@ -582,8 +580,7 @@ color <br>
 ### 4. API Endpoints
 
 #### Generate Themes
-Generates themes based on the AI profile. <br>
-POST /themes/generate
+Generates themes based on the AI profile.
 
 #### Flow
 1. User is logged in
@@ -594,7 +591,7 @@ POST /themes/generate
 6. Themes are saved in themes
 
 #### Request
-POST /themes/generate
+POST /ai/generate
 ##### Response
 
 ```json
@@ -610,7 +607,7 @@ POST /themes/generate
 
 #### Get Themes
 Retrieves the generated themes of the logged-in user.<br>
-GET /themes/me
+GET /themes?id=[PROFILE_ID]
 ##### Flow
 • Retrieve req.user.id <br>
 • Find profile <br>
@@ -628,7 +625,7 @@ GET /themes/me
 
 ### 5. Service Layer
 
-The `themeService` contains the business logic.
+The `themeGenerate` contains the business logic.
 
 #### Functions
 
@@ -718,7 +715,7 @@ This data can be incorporated into the AI prompt to improve personalization.
 
 #### Improved AI Models
 
-The current model (TinyLlama) is relatively small. In the future, it can be replaced with more advanced models, such as:
+The current model (Tiny-Aya-Water) is relatively small. In the future, it can be replaced with more advanced models, such as:
 
 - Llama 3
 - Mistral
@@ -732,7 +729,10 @@ To reduce costs and latency, caching can be introduced:
 
 - Redis for fast data access
 - Storing AI responses to avoid repeated processing
--
+
+#### Enabling API Keys
+
+We've already implemented the functionality to use API keys for authentication. This can be enabled in the future to allow third-party applications to access the theme generation service securely.
 ### 10. Summary
 
 The AI Theme Generator:
@@ -746,4 +746,29 @@ The AI Theme Generator:
 
 This system enables the generation of personalized insights based on user behavior.
 
-## Edge Casses
+## Edge Cases
+### Environment & Configuration Issues
+- Missing or Incomplete .env File, User misses variables or forgets to create .env entirely, leading to application failure.
+- Database Connection Failures, Incorrect credentials or database server issues can prevent the app from connecting to the database.
+- Node.js Version Incompatibility, Running the app on an unsupported Node.js version can cause unexpected errors.
+### Database Schema Issues
+- Schema Import Problems, Errors during database import (e.g., syntax errors, missing tables) can lead to a non-functional database.
+- Existing Data Conflicts, If the database already contains data that conflicts with the expected schema (e.g., duplicate entries), it can cause issues during app operation.
+### Authentication & API Issues
+- Youtube OAuth Failures, Users may encounter issues during the YouTube OAuth flow, such as denied permissions or callback errors.
+- Hugging Face API Issues, Problems with the Hugging Face API (e.g., rate limits, downtime) can disrupt theme generation.
+- JWT Token Issues, Expired or malformed JWT tokens can lead to authentication failures.
+### Network & Port Issues
+- Port Conflicts, If port 8000 is already in use, the app will fail to start.
+- API Key Middleware Bug, If the API key middleware is enabled but not properly configured, it can block all requests or allow unauthorized access.
+### Request/Response Issues
+- Missing Accept Header, If the client does not send an Accept header, the server may not know how to respond properly.
+- Large Payload Issues, Sending large requests (e.g., large AI profiles) may cause timeouts or memory issues.
+### File System Issues
+- Relative Path Problems, If the env file is put in the wrong directory, or the app is run through linux, it may not be able to find the .env file due to path issues.
+### Dependancy Issues
+- Package Installation Failures, Issues during npm install (e.g., network problems, incompatible package versions) can prevent the app from running.
+- Missing Optional Dependencies, If optional dependencies (e.g., for AI integration) are not installed, certain features may not work.
+### Data Integrity Issues
+- Concurrent YouTube Data Fetching, If multiple requests to fetch YouTube data for the same user occur simultaneously, it may lead to race conditions and inconsistent database state.
+- Partial Data Storage, If an error occurs while saving AI profiles or themes, it may result in incomplete data being stored in the database.
