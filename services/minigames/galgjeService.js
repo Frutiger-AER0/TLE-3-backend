@@ -47,7 +47,7 @@ export function createGalgje(sessionId, minigameId, userId) {
         word: randomWord,
         guessedLetters: [],
         wrongLetters: [],
-        maxWrong: 6,
+        maxWrong: 10,
         status: "active",
         minigameId,
         userId
@@ -165,7 +165,7 @@ export function createGalgjeMatch(matchId, minigameId, players) {
         word,
         guessedLetters: [],
         wrongLetters: [],
-        maxWrong: 6,
+        maxWrong: 10,
         status: "active",
         players,
         minigameId
