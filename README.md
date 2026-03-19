@@ -3,7 +3,7 @@
 Know your AI API is a RESTful backend that collects user activity via the YouTube Data API and transforms it into an AI-generated profile using Hugging Face models.
 
 The goal?
-👉 Help users understand how their data is interpreted by AI systems—and expose the gap between perception and reality.
+👉 Help users understand how their data is interpreted by AI systems.
 
 ## ✨ Key Features
 
