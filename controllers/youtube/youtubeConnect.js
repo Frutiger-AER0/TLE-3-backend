@@ -1,5 +1,5 @@
 import db from "../../database.js";
-import { getAuthUrl, getTokens, setCredentials } from "../../api/youtubeAuth.js";
+import { getAuthUrl, getTokens, setCredentials, refreshAccessToken } from "../../api/youtubeAuth.js";
 
 export function initiateYouTubeAuth(req, res) {
     try {
@@ -8,8 +8,8 @@ export function initiateYouTubeAuth(req, res) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
-    const authUrl = getAuthUrl();
-    // Store userId in URL to retrieve it in the callback
+        const authUrl = getAuthUrl();
+        // Store userId in URL to retrieve it in the callback
         res.json({
             authUrl: `${authUrl}&state=${userId}`,
             message: "Please visit this URL to authorize YouTube access"
@@ -163,9 +163,22 @@ export async function getYouTubeDetail(req, res) {
                     return res.status(404).json({ connected: false, message: "YouTube not connected for this user" });
                 }
 
-                const { access_token, refresh_token } = results[0];
+                let { access_token, refresh_token } = results[0];
 
                 try {
+                    // Attempt to refresh the access token first
+                    try {
+                        if (refresh_token) {
+                            console.log('Refreshing access token...');
+                            const refreshed = await refreshAccessToken(refresh_token);
+                            access_token = refreshed.access_token;
+                            refresh_token = refreshed.refresh_token || refresh_token;
+                            // Optionally update the database with the new tokens
+                        }
+                    } catch (refreshError) {
+                        console.warn('Token refresh failed, trying with existing token:', refreshError.message);
+                    }
+
                     // Set credentials and create YouTube client
                     const youtube = setCredentials({
                         access_token,
@@ -267,13 +280,26 @@ export async function getLikedVideos(req, res) {
                     return res.status(404).json({ message: 'YouTube account not linked' });
                 }
 
+                let { access_token, refresh_token } = results[0];
+
                 try {
+                    // Attempt to refresh the access token first
+                    try {
+                        if (refresh_token) {
+                            console.log('Refreshing access token...');
+                            const refreshed = await refreshAccessToken(refresh_token);
+                            access_token = refreshed.access_token;
+                            refresh_token = refreshed.refresh_token || refresh_token;
+                        }
+                    } catch (refreshError) {
+                        console.warn('Token refresh failed, trying with existing token:', refreshError.message);
+                    }
+
                     // Set up YouTube client with stored credentials
-                    const tokens = {
-                        access_token: results[0].access_token,
-                        refresh_token: results[0].refresh_token
-                    };
-                    const youtube = setCredentials(tokens);
+                    const youtube = setCredentials({
+                        access_token,
+                        refresh_token
+                    });
 
                     // Fetch the "Liked Videos" playlist (ID: "LL")
                     const likedResponse = await youtube.playlistItems.list({
@@ -361,13 +387,26 @@ export async function postLikedVideos(req, res) {
                     return res.status(404).json({ message: 'YouTube account not linked' });
                 }
 
+                let { access_token, refresh_token } = results[0];
+
                 try {
+                    // Attempt to refresh the access token first
+                    try {
+                        if (refresh_token) {
+                            console.log('Refreshing access token...');
+                            const refreshed = await refreshAccessToken(refresh_token);
+                            access_token = refreshed.access_token;
+                            refresh_token = refreshed.refresh_token || refresh_token;
+                        }
+                    } catch (refreshError) {
+                        console.warn('Token refresh failed, trying with existing token:', refreshError.message);
+                    }
+
                     // Set up YouTube client with stored credentials
-                    const tokens = {
-                        access_token: results[0].access_token,
-                        refresh_token: results[0].refresh_token
-                    };
-                    const youtube = setCredentials(tokens);
+                    const youtube = setCredentials({
+                        access_token,
+                        refresh_token
+                    });
 
                     // Fetch the "Liked Videos" playlist
                     const likedResponse = await youtube.playlistItems.list({

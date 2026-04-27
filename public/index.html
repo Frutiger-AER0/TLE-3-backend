@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API-Key Management</title>
+    <link rel="stylesheet" href="/styles.css"></head>
+</head>
+<body>
+<div class="container">
+    <h1>API Key Management Dashboard</h1>
+    <!-- Admin Section -->
+    <div class="admin-section">
+        <h2>Admin Controls</h2>
+        <div class="control-group">
+            <p>Momenteel uitgeschakelt op de server, zodat onze websites blijven werken</p>
+            <p>Getest en werkend, kan ook lokaal getest worden met .env</p>
+            <button id="toggleApiKeyBtn" class="btn btn-primary">Enable API Key Protection</button>
+            <p id="apiKeyStatus" class="status-text"></p>
+        </div>
+    </div>
+    <!-- Login Section -->
+    <div class="login-section" id="loginSection">
+        <h2>Login</h2>
+        <p>Voor testen, gebruik email: amberdekoster03@gmail.com, wachtwoord: youtube</p>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>                <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+        </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>            <p id="loginError" class="error-text"></p>
+    </div>
+    <!-- API Keys Section (shown after login) -->
+    <div class="api-keys-section" id="apiKeysSection" style="display: none;">
+        <h2>Your API Keys</h2>
+        <div class="user-info">
+            <p>Logged in as: <strong id="userEmail"></strong></p>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+        <div class="create-key-section">
+            <h3>Create New API Key</h3>
+            <form id="createKeyForm">
+                <div class="form-group">
+                    <label for="keyName">Key Name:</label>
+                    <input type="text" id="keyName" placeholder="e.g., Development Key" required>
+                </div>
+                <div class="form-group">
+                    <label for="expiresInDays">Expires In (days) - Leave empty for no expiration:</label>
+                    <input type="number" id="expiresInDays" min="1" placeholder="Optional">
+                </div>
+                <button type="submit" class="btn btn-success">Generate API Key</button>
+            </form>
+        </div>
+        <div class="keys-list-section">
+            <h3>Your API Keys</h3>
+            <div id="keysList" class="keys-list">
+                <p class="loading">Loading keys...</p>
+            </div>
+        </div>
+        <div class="api-usage-section">
+            <h3>How to Use Your API Key</h3>
+            <p>Include your API key in requests using either method:</p>
+            <div class="code-block">
+                <strong>Method 1: Header</strong>
+                <pre>X-API-Key: YOUR_API_KEY</pre>
+            </div>
+            <div class="code-block">
+                <strong>Method 2: Query Parameter</strong>
+                <pre>?api_key=YOUR_API_KEY</pre>
+            </div>            </div>
+    </div>
+</div>
+<script src="/script.js"></script>
+</body>
+</html>

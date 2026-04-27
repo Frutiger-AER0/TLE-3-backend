@@ -24,13 +24,6 @@ try{
         next();
     });
 
-    app.get('/', (req, res) => {
-        db.query('SELECT * FROM users', (err, results) => {
-            if (err) throw err;
-            res.json(results);
-        });
-    });
-
     app.use((req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -42,6 +35,8 @@ try{
         next();
     });
 
+    app.use(express.static('public'));
+
     //Middelware to support application/JSON content-type
     app.use(express.json());
     //Middelware to support application/x-www-form-urlencoded content-type
@@ -49,6 +44,24 @@ try{
 
     app.use("/login", authRouter);
     app.use("/auth", youtubeRouter);
+
+    app.get('/admin/api-key-status', (req, res) => {
+        res.json({
+            requireApiKey: process.env.REQUIRE_API_KEY === "true"
+        });
+    });
+
+    app.post('/admin/toggle-api-key-requirement', (req, res) => {
+        // Note: In production, add proper authentication here
+        const { requireApiKey } = req.body;
+        process.env.REQUIRE_API_KEY = requireApiKey ? "true" : "false";
+        res.json({
+            message: "API key requirement updated",
+            requireApiKey: process.env.REQUIRE_API_KEY === "true"
+        });
+    });
+
+    app.use("/api-keys", apiKeysRouter);
 
     // API Key middleware - applies to all routes below
     console.log(`API key is required? ${process.env.REQUIRE_API_KEY === "true" ? "ENABLED" : "DISABLED"}`);

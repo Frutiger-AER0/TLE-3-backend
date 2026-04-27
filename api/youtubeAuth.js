@@ -29,6 +29,19 @@ export async function getTokens(code) {
     }
 }
 
+export async function refreshAccessToken(refreshToken) {
+    try {
+        oauth2Client.setCredentials({
+            refresh_token: refreshToken
+        });
+        const { credentials } = await oauth2Client.refreshAccessToken();
+        return credentials;
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        throw error;
+    }
+}
+
 export function setCredentials(tokens) {
     oauth2Client.setCredentials(tokens);
     return google.youtube({
