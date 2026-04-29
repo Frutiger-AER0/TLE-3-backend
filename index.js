@@ -54,6 +54,7 @@ try{
     console.log(`API key is required? ${process.env.REQUIRE_API_KEY === "true" ? "ENABLED" : "DISABLED"}`);
     app.use(verifyApiKey);
 
+    // Oude, niet versioned routes, zodat de front end niet breekt
     app.use("/users", usersRouter);
     app.use("/admin", adminRouter);
     app.use("/families", familiesRouter);
@@ -64,6 +65,15 @@ try{
     app.use("/learningModules", learningModulesRouter);
     app.use("/", dataRouter);
 
+    // Nieuwe versioned routes
+    app.use("/api/v1/users", usersRouter);
+    app.use("/api/v1/admin", adminRouter);
+    app.use("/api/v1/families", familiesRouter);
+    app.use("/api/v1/minigame-sessions", minigameSessions);
+    app.use("/api/v1/ai", aiRouter);
+    app.use("/api/v1/learningModules", learningModulesRouter);
+    app.use("/api/v1/minigame-matches", matchesRouter);
+    app.use("/api/v1", dataRouter);
 
     app.listen(8000, () => console.log('Server running on port 8000'));
 }
