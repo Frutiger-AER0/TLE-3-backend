@@ -6,7 +6,7 @@ import {
     getYouTubeDetail,
     getLikedVideos,
     postLikedVideos
-} from '../Controllers/youtube/youtubeConnect.js';
+} from '../controllers/youtube/youtubeConnect.js';
 import { verifyToken } from '../middleware/auth.js';
 
 const youtubeRouter = express.Router();

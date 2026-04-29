@@ -1,0 +1,528 @@
+{
+  "info": {
+    "name": "Full API Collection",
+    "_postman_id": "full-collection-001",
+    "description": "Complete API collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"\", \"password\": \"\" }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Options Users",
+          "request": {
+            "method": "OPTIONS",
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Options User",
+          "request": {
+            "method": "OPTIONS",
+            "url": "{{baseUrl}}/users/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Admin Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/users",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Families",
+      "item": [
+        {
+          "name": "Get Families",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/families"
+          }
+        },
+        {
+          "name": "Create Family",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/families"
+          }
+        },
+        {
+          "name": "Get Family",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/families/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Family",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/families/:id"
+          }
+        },
+        {
+          "name": "Delete Family",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/families/:id"
+          }
+        },
+        {
+          "name": "Options Family",
+          "request": {
+            "method": "OPTIONS",
+            "url": "{{baseUrl}}/families/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Learning Modules",
+      "item": [
+        {
+          "name": "Get Modules",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/learningModules"
+          }
+        },
+        {
+          "name": "Create Module",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/learningModules"
+          }
+        },
+        {
+          "name": "Get Module",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/learningModules/:id"
+          }
+        },
+        {
+          "name": "Update Module",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/learningModules/:id"
+          }
+        },
+        {
+          "name": "Delete Module",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/learningModules/:id"
+          }
+        },
+        {
+          "name": "Options Modules",
+          "request": {
+            "method": "OPTIONS",
+            "url": "{{baseUrl}}/learningModules"
+          }
+        },
+        {
+          "name": "Options Module",
+          "request": {
+            "method": "OPTIONS",
+            "url": "{{baseUrl}}/learningModules/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Minigame Matches",
+      "item": [
+        {
+          "name": "Create Match",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/minigame-matches"
+          }
+        },
+        {
+          "name": "Join Match",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/minigame-matches/join"
+          }
+        },
+        {
+          "name": "Players",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/minigame-matches/:id/players"
+          }
+        },
+        {
+          "name": "Start Match",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/minigame-matches/:id/start",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Guess",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/minigame-matches/:id/guess"
+          }
+        },
+        {
+          "name": "State",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/minigame-matches/:id/state"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Minigame Sessions",
+      "item": [
+        {
+          "name": "Create Session",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/minigame-sessions"
+          }
+        },
+        {
+          "name": "Get Session",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/minigame-sessions/:id"
+          }
+        },
+        {
+          "name": "Guess Session",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/minigame-sessions/:id/guess"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Generate",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/ai/generate",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "My Themes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/ai/me",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "YouTube",
+      "item": [
+        {
+          "name": "Test Callback",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/test-callback"
+          }
+        },
+        {
+          "name": "Start OAuth",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/youtube",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Callback",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/youtube/callback"
+          }
+        },
+        {
+          "name": "Status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/youtube/status",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/youtube/detail",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Liked Videos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/youtube/liked-videos",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Store Liked Videos",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/youtube/liked-videos",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Data Access",
+      "item": [
+        {
+          "name": "Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "AI Profiles",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/ai_profiles"
+          }
+        },
+        {
+          "name": "Themes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/themes"
+          }
+        },
+        {
+          "name": "Families",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/families"
+          }
+        },
+        {
+          "name": "Recommendations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/recommendations"
+          }
+        },
+        {
+          "name": "Logs",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/logs"
+          }
+        },
+        {
+          "name": "Family Quizzes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/family_quizzes"
+          }
+        },
+        {
+          "name": "Quizzes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/quizzes"
+          }
+        },
+        {
+          "name": "Minigame Matches",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/minigame_matches"
+          }
+        },
+        {
+          "name": "Minigame Sessions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/minigame_sessions"
+          }
+        },
+        {
+          "name": "YouTube Data",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/youtube_data"
+          }
+        },
+        {
+          "name": "Options Root",
+          "request": {
+            "method": "OPTIONS",
+            "url": "{{baseUrl}}/"
+          }
+        }
+      ]
+    }
+  ]
+}
